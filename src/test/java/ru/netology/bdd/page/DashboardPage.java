@@ -20,6 +20,7 @@ public class DashboardPage {
     private SelenideElement heading1 = $("[data-test-id='dashboard']");
     private SelenideElement heading2 = $(byText("Ваши карты"));
     private ElementsCollection cards = $$(".list__item div");
+    //private ElementsCollection buttons = $$("[data-test-id='action-deposit' span]");
     private final String balanceStart = "баланс: ";
     private final String balanceFinish = " р.";
 
@@ -28,8 +29,8 @@ public class DashboardPage {
         heading2.shouldBe(visible);
     }
 
-    public int getCardBalance(String id) {
-        val text = cards.findBy(Condition.text("data-test-id")).getText();
+    public int getCardBalance(int id) {
+        val text = cards.get(id).text();
         return extractBalance(text);
     }
 
@@ -40,8 +41,8 @@ public class DashboardPage {
         return Integer.parseInt(value);
     }
 
-    public MoneyTransferPage cardRefill(String id) {
-        cards.findBy(Condition.attribute(id)).$("[data-test-id='action-deposit' span]").click();
+    public MoneyTransferPage cardRefill(int id) {
+        cards.get(id).$(byText("Пополнить")).click();
         return new MoneyTransferPage();
     }
 
