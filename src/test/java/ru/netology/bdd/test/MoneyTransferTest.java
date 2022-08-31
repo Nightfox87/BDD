@@ -16,7 +16,7 @@ public class MoneyTransferTest {
     @BeforeEach
     void setup() {
         Configuration.holdBrowserOpen = true;
-        open("http://localhost:9999");
+        open("http://localhost:7777");
     }
 
     @Test
@@ -31,8 +31,8 @@ public class MoneyTransferTest {
         var moneyTransferPage = dashboardPage.cardRefill(0);
         int amount = 1000;
         moneyTransferPage.moneyTransfer(amount, DataHelper.getSecondCardInfo().getCardNumber());
-        Assertions.assertEquals(dashboardPage.getCardBalance(0), balanceFirstBeforeTransfer + amount);
-        Assertions.assertEquals(dashboardPage.getCardBalance(1), balanceSecondBeforeTransfer - amount);
+        Assertions.assertEquals(balanceFirstBeforeTransfer + amount, dashboardPage.getCardBalance(0));
+        Assertions.assertEquals(balanceSecondBeforeTransfer - amount, dashboardPage.getCardBalance(1));
 
     }
 
@@ -48,22 +48,9 @@ public class MoneyTransferTest {
         var moneyTransferPage = dashboardPage.cardRefill(1);
         int amount = 1000;
         moneyTransferPage.moneyTransfer(amount, DataHelper.getFirstCardInfo().getCardNumber());
-        Assertions.assertEquals(dashboardPage.getCardBalance(0), balanceFirstBeforeTransfer - amount);
-        Assertions.assertEquals(dashboardPage.getCardBalance(1), balanceSecondBeforeTransfer + amount);
+        Assertions.assertEquals(balanceFirstBeforeTransfer - amount, dashboardPage.getCardBalance(0));
+        Assertions.assertEquals(balanceSecondBeforeTransfer + amount, dashboardPage.getCardBalance(1));
 
-    }
-
-    @Test
-    void shouldNotTransferMoneyFromSecondToFirstOverLimit() {
-        var loginPage = new LoginPage();
-        var authInfo = DataHelper.getAuthInfo();
-        var verificationPage = loginPage.validLogin(authInfo);
-        var verificationCode = DataHelper.getVerificationCode(authInfo);
-        var dashboardPage = verificationPage.validVerify(verificationCode);
-        int balanceSecondBeforeTransfer = dashboardPage.getCardBalance(1);
-        var moneyTransferPage = dashboardPage.cardRefill(0);
-        moneyTransferPage.moneyTransfer(balanceSecondBeforeTransfer + 5000, DataHelper.getSecondCardInfo().getCardNumber());
-        $(".notification__content").shouldBe(visible);
     }
 
     @Test
@@ -78,8 +65,8 @@ public class MoneyTransferTest {
         var moneyTransferPage = dashboardPage.cardRefill(1);
         int amount = 0;
         moneyTransferPage.moneyTransfer(amount, DataHelper.getFirstCardInfo().getCardNumber());
-        Assertions.assertEquals(dashboardPage.getCardBalance(0), balanceFirstBeforeTransfer);
-        Assertions.assertEquals(dashboardPage.getCardBalance(1), balanceSecondBeforeTransfer);
+        Assertions.assertEquals(balanceFirstBeforeTransfer, dashboardPage.getCardBalance(0));
+        Assertions.assertEquals(balanceSecondBeforeTransfer, dashboardPage.getCardBalance(1));
     }
     @Test
     void shouldNotTransferMoneyFromFirstToFirst() {
@@ -93,8 +80,23 @@ public class MoneyTransferTest {
         var moneyTransferPage = dashboardPage.cardRefill(0);
         int amount = 1000;
         moneyTransferPage.moneyTransfer(amount, DataHelper.getFirstCardInfo().getCardNumber());
-        Assertions.assertEquals(dashboardPage.getCardBalance(0), balanceFirstBeforeTransfer);
-        Assertions.assertEquals(dashboardPage.getCardBalance(1), balanceSecondBeforeTransfer);
+        Assertions.assertEquals(balanceFirstBeforeTransfer, dashboardPage.getCardBalance(0));
+        Assertions.assertEquals(balanceSecondBeforeTransfer, dashboardPage.getCardBalance(1));
+    }
+    @Test
+    void shouldNotTransferMoneyFromSecondToFirstOverLimit() {
+        var loginPage = new LoginPage();
+        var authInfo = DataHelper.getAuthInfo();
+        var verificationPage = loginPage.validLogin(authInfo);
+        var verificationCode = DataHelper.getVerificationCode(authInfo);
+        var dashboardPage = verificationPage.validVerify(verificationCode);
+        int balanceFirstBeforeTransfer = dashboardPage.getCardBalance(0);
+        int balanceSecondBeforeTransfer = dashboardPage.getCardBalance(1);
+        var moneyTransferPage = dashboardPage.cardRefill(0);
+        moneyTransferPage.moneyTransfer(balanceSecondBeforeTransfer + 5000, DataHelper.getSecondCardInfo().getCardNumber());
+        Assertions.assertEquals(balanceFirstBeforeTransfer, dashboardPage.getCardBalance(0));
+        Assertions.assertEquals(balanceSecondBeforeTransfer, dashboardPage.getCardBalance(1));
+        moneyTransferPage.shouldAppearErrorNotification();
     }
 
 }

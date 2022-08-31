@@ -14,6 +14,7 @@ public class MoneyTransferPage {
     private SelenideElement amountField = $("[data-test-id='amount'] input");
     private SelenideElement cardNumberField = $("[data-test-id='from'] input");
     private SelenideElement transferButton = $("[data-test-id='action-transfer'] span");
+    private SelenideElement errorNotification = $(".notification__content");
 
 
     public MoneyTransferPage(){
@@ -26,6 +27,10 @@ public class MoneyTransferPage {
         cardNumberField.setValue(cardNumber);
         transferButton.click();
         return new MoneyTransferPage();
+    }
+
+    public void shouldAppearErrorNotification() {
+        errorNotification.shouldBe(visible);
     }
 
 }
