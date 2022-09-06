@@ -16,7 +16,7 @@ public class MoneyTransferTest {
     @BeforeEach
     void setup() {
         Configuration.holdBrowserOpen = true;
-        open("http://localhost:7777");
+        open("http://localhost:9999");
     }
 
     @Test
@@ -94,9 +94,10 @@ public class MoneyTransferTest {
         int balanceSecondBeforeTransfer = dashboardPage.getCardBalance(1);
         var moneyTransferPage = dashboardPage.cardRefill(0);
         moneyTransferPage.moneyTransfer(balanceSecondBeforeTransfer + 5000, DataHelper.getSecondCardInfo().getCardNumber());
+        moneyTransferPage.shouldAppearErrorNotification();
         Assertions.assertEquals(balanceFirstBeforeTransfer, dashboardPage.getCardBalance(0));
         Assertions.assertEquals(balanceSecondBeforeTransfer, dashboardPage.getCardBalance(1));
-        moneyTransferPage.shouldAppearErrorNotification();
+
     }
 
 }
